@@ -1,55 +1,143 @@
-const inquirer = require("inquirer");
+const path = require("path");
 const fs = require("fs");
-const util = require("util");
-const employee = require("./lib/Employee");
-const intern = require("./lib/Intern");
-const engineer = require("./lib/Engineer");
-const manager = require("./lib/Manager");
+const inquirer = require("inquirer");
+const Manager = require("./lib/Manager")
+const Engineer = require("./lib/Engineer");
+const Intern = require("./lib/Intern");
+
+
+const teamMembers = [];
 
 
 
-const writeFileAsync = util.promisify(fs.writeFile);
+function appMenue() {
+    function createManager() {
+        console.log("Build your Team");
+        inquirer.prompt([
+            {
+                type: "input",
+                name: "managerName",
+                message: "What is the manager name?"
+            }
+            ,   {
+                type: "input",
+                name: "managerId",
+                message: "What is the manager id?"
+            },
+            {
+                type: "input",
+                name: "managerEmail",
+                message: "What is the manager Email?"
+            },
+            {
+                type: "input",
+                name: "managerNumber",
+                message: "What is the manager office number?"
+            }
 
-function promptUser() {
-  return inquirer.prompt([
+        ]).then(answer => {
+            const manager = new Manager(answer.managerName,answer.managerId,answer.managerEmail, answer.managerNumber);
+            teamMembers.push(manager);
+            createTeam();
+        })
+    }
+
+    function createTeam()
     {
-      type: "input",
-      name: "name",
-      message: "Enter employee's name"
-    },
-    {
-      type: "input",
-      name: "role",
-      message: "Enter employee's role"
-    },
-    {
-      type: "input",
-      name: "github",
-      message: "Enter employee's GitHub Username"
-    },
-    {
-      type: "input",
-      name: "email",
-      message: "Enter employee's email?"
-    },
-    {
-        type: "input",
-        name: "id",
-        message: "Enter employee's id?"
-      },
-      {
-        type: "input",
-        name: "school",
-        message: "Enter employee's school?"
-      },
-  ]);
+        inquirer.prompt([
+            {
+                type: "list",
+                name: "managerChoice",
+                message: "What type of team would you like to build?",
+                choices: [
+                    "Engineer",
+                    "Intern",
+                    "I don't want to add any more"
+                ]
+            }
+
+        ]).then(choice => {
+            switch(choice.managerChoice){
+                case "Engineer" : addEngineer();
+                                    break;
+                case "Intern" : addIntern();
+                                    break;
+                case "I don't want to add any more" : buildTeam();
+                                    break;
+               default: buildTeam();
+            }
+        })
+    }
+    function addEngineer(){
+        inquirer.prompt([
+            {
+                type: "input",
+                name: "enginnerName",
+                message: "What is the Enginner name?"
+            }
+            ,   {
+                type: "input",
+                name: "enginnerID",
+                message: "What is the Enginner id?"
+            },
+            {
+                type: "input",
+                name: "enginnerEmail",
+                message: "What is the Enginner Email?"
+            },
+            {
+                type: "input",
+                name: "enginnerGitHub",
+                message: "What is the Enginner GitHub username"
+            }
+
+        ]).then(answer => {
+            const engineer = new Engineer(answer.enginnerName,answer.enginnerID,answer.enginnerEmail, answer.enginnerGitHub);
+            teamMembers.push(engineer);
+            createTeam();
+        })
+
+    }
+    function addIntern(){
+
+        inquirer.prompt([
+            {
+                type: "input",
+                name: "internName",
+                message: "What is the Intern name?"
+            }
+            ,   {
+                type: "input",
+                name: "internId",
+                message: "What is the Intern id?"
+            },
+            {
+                type: "input",
+                name: "internEmail",
+                message: "What is the Intern Email?"
+            },
+            {
+                type: "input",
+                name: "internSchool",
+                message: "What is the Intern School Name"
+            }
+
+        ]).then(answer => {
+            const intern = new Intern(answer.internName,answer.internId,answer.internEmail, answer.internSchool);
+            teamMembers.push(intern);
+            createTeam();
+        })
+
+    }
+    function buildTeam(){
+        fs.writeFileSync(pathToFile,render(teamMembers), "utf-8");
+    }
+    createManager();
+
 }
-//gen html for required use cards//
-function addManager(){
-    
-}
+
+appMenue();
 
 
 
-//get info for each employee subclass and saves intern and engineer info to an array async function
 
