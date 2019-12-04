@@ -1,70 +1,35 @@
 const path = require("path");
-const fs = require("fs");
-const templatesDirectory = path.resolve(__dirname, "../templates");
+const fs = require("fs"); 
 
+const templatesDir = path.resolve(__dirname, "../templates");
 const render = employees => {
-    const html = []
-    html.push(employees.filter(employee => employee.getRole == "Manager").map(manager => renderManager(manager)))
-    html.push(employees.filter(employee => employee.getRole == "Intern").map(intern => renderIntern(intern)))
-    html.push(employees.filter(employee => employee.getRole == "employee").map(employee => renderEmployee(employee)))
-    html.push(employees.filter(employee => employee.getRole == "Engineer").map(engineer => renderEngineer(engineer)))
-    return renderMain(html.join(""))
+    const html = [];
+    html.push(employees
+        .filter(employee => employee.getRole() === "Manager")
+        .map(manager => renderManager(manager))
+    )
 
+    return renderMain(html.join(""));
 }
 
 const renderManager = manager => {
-    let template = fs.readFileSync(path.resolve(templatesDirectory, "Manager.html"),"utf8");
-    template = replacePlaceHolder(template, "name", manager.getName);
-    template = replacePlaceHolder(template, "role", manager.getRole);
-    template = replacePlaceHolder(template, "email", manager.getEmail);
-    template = replacePlaceHolder(template, "id", manager.getId);
-    template = replacePlaceHolder(template, "officeNumber", manager.getOfficeNumber);
-
-
-
-}
-
-const renderIntern = intern => {
-    let template = fs.readFileSync(path.resolve(templatesDirectory, "Intern.html"),"utf8");
-    template = replacePlaceHolder(template, "name", intern.getName);
-    template = replacePlaceHolder(template, "role", intern.getRole);
-    template = replacePlaceHolder(template, "email", intern.getEmail);
-    template = replacePlaceHolder(template, "id", intern.getId);
-    template = replacePlaceHolder(template, "school", intern.getSchool);
-
-
-}
-
-const renderEmployee = employee => {
-    let template = fs.readFileSync(path.resolve(templatesDirectory, "Employee.html"),"utf8");
-    template = replacePlaceHolder(template, "name", employee.getName);
-    template = replacePlaceHolder(template, "role", employee.getRole);
-    template = replacePlaceHolder(template, "email", employee.getEmail);
-    template = replacePlaceHolder(template, "id", employee.getId);
-    template = replacePlaceHolder(template, "gitHub", employee.getGitHub);
-
-
-}
-
-const renderEngineer = engineer => {
-    let template = fs.readFileSync(path.resolve(templatesDirectory, "Engineer.html"),"utf8");
-    template = replacePlaceHolder(template, "name", engineer.getName);
-    template = replacePlaceHolder(template, "role", engineer.getRole);
-    template = replacePlaceHolder(template, "email", engineer.getEmail);
-    template = replacePlaceHolder(template, "id", engineer.getId);
-    template = replacePlaceHolder(template, "gitHub", engineer.getGitHub);
-
-
+    let temp = fs.readFileSync(path.resolve(templatesDir,"manager.html"), "utf8");
+    temp = replacePlaceholders(temp, "name", manager.getName());
+    temp = replacePlaceholders(temp, "role", manager.getRole());
+    temp = replacePlaceholders(temp, "email", manager.getEmail());
+    temp = replacePlaceholders(temp, "id", manager.getId());
+    temp = replacePlaceholders(temp, "officeNumber", manager.getOfficeNumber());
+    console.log(temp)
+    return temp;
 }
 
 const renderMain = html => {
-    const template = fs.readFileSync(path.resolve(templatesDirectory, "Main.html"),"utf8");
-    return replacePlaceHolder(template, "team", html)
+    const temp = fs.readFileSync(path.resolve(templatesDir,"mainhtmlfile.html"), "utf8");
+    return replacePlaceholders(temp, "team", html)
 }
+const replacePlaceholders = (temp, placeholder, value) => {
+    const pattern = new RegExp("{{ " + placeholder + " }}", "gm");
+    return temp.replace(pattern, value);
+  };
 
-const replacePlaceHolder = (template, placeholder, value) => {
-    const pattern = new RegExp("{{ "+placeholder+" }}", "gm")
-    return template.replace(pattern, value);
-
-}
-module.exports = render
+module.exports = render;
